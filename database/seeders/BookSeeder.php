@@ -17,8 +17,8 @@ class BookSeeder extends Seeder
     {
         $faker = Faker::create();
         $categories = BookCategory::pluck('id')->toArray();
-        $batchSize = 1;
-        $totalRecords = 1;
+        $batchSize = 1000;
+        $totalRecords = 10000000;
         ini_set('memory_limit', '1024M');
 
 
@@ -29,7 +29,7 @@ class BookSeeder extends Seeder
                 $books[] = [
                     'name' => $faker->sentence(3),
                     'author' => $faker->name,
-                    'seller_id' => 2,
+                    'seller_id' => 1,
                     'category_id' => $faker->randomElement($categories),
                     'price' => $faker->randomFloat(2, 10, 100),
                     'created_at' => now(),

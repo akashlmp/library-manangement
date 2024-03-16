@@ -3,25 +3,29 @@
 namespace App\Http\Controllers\Library;
 
 use App\Http\Controllers\Controller;
+use App\Models\Book;
+use App\Models\BookCategory;
 use Illuminate\Http\Request;
 
 class LibraryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $library = [
+        $libraryQuery = Book::with('seller', 'category');
+        if (isset($request->search) && $request->search != '') {
+            $libraryQuery->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('author', 'like', '%' . $request->search . '%');
+            });
+        } else {
+            $libraryQuery->orderByDesc('created_at');
+        }
+        $library = $libraryQuery->paginate(10);
+        $data['library'] = $library;
 
-            [
-                'product' => 'test1',
-            ],
-            [
-                'product' => 'test2',
-            ],
-            [
-                'product' => 'test3',
-            ],
-
-        ];
-        return view("library.main", compact('library'));
+        if ($request->ajax()) {
+            return response()->json(compact('data'));
+        }
+        return view("library.main", compact('data'));
     }
 }
